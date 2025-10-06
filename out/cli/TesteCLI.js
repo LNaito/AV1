@@ -13,9 +13,8 @@ class TesteCLI {
     static salvarTestes() {
         try {
             const dataDir = path_1.default.dirname(this.DATA_FILE);
-            if (!fs_1.default.existsSync(dataDir)) {
+            if (!fs_1.default.existsSync(dataDir))
                 fs_1.default.mkdirSync(dataDir, { recursive: true });
-            }
             const dadosSerializaveis = this.testes.map(teste => ({
                 tipo: teste.tipoT,
                 resultado: teste.resultado
@@ -34,65 +33,17 @@ class TesteCLI {
                 return;
             }
             const dados = JSON.parse(fs_1.default.readFileSync(this.DATA_FILE, 'utf8'));
-            this.testes = dados.map((dado) => {
-                return new Teste_1.default(dado.tipo, dado.resultado);
-            });
+            this.testes = dados.map((dado) => new Teste_1.default(dado.tipo, dado.resultado));
             console.log(`✅ ${this.testes.length} teste(s) carregado(s) com sucesso!`);
         }
         catch (error) {
             console.error('❌ Erro ao carregar testes:', error);
         }
     }
-    static async show() {
-        const { acao } = await inquirer_1.default.prompt([
-            {
-                type: 'list',
-                name: 'acao',
-                message: 'Menu Testes',
-                choices: [
-                    'Cadastrar Novo Teste',
-                    'Listar Todos Testes',
-                    'Executar Teste',
-                    'Salvar Testes',
-                    'Carregar Testes',
-                    'Voltar'
-                ]
-            }
-        ]);
-        switch (acao) {
-            case 'Cadastrar Novo Teste':
-                await this.cadastrarTeste();
-                break;
-            case 'Listar Todos Testes':
-                await this.listarTestes();
-                break;
-            case 'Executar Teste':
-                await this.executarTeste();
-                break;
-            case 'Salvar Testes':
-                this.salvarTestes();
-                break;
-            case 'Carregar Testes':
-                this.carregarTestes();
-                break;
-            case 'Voltar':
-                break;
-        }
-    }
     static async cadastrarTeste() {
         const dados = await inquirer_1.default.prompt([
-            {
-                type: 'list',
-                name: 'tipo',
-                message: 'Qual o tipo do teste? ',
-                choices: Object.values(enum_1.TipoTeste)
-            },
-            {
-                type: 'list',
-                name: 'resultado',
-                message: 'Qual o resultado do teste? ',
-                choices: Object.values(enum_1.ResultadoTeste)
-            }
+            { type: 'list', name: 'tipo', message: 'Qual o tipo do teste? ', choices: Object.values(enum_1.TipoTeste) },
+            { type: 'list', name: 'resultado', message: 'Qual o resultado do teste? ', choices: Object.values(enum_1.ResultadoTeste) }
         ]);
         const teste = new Teste_1.default(dados.tipo, dados.resultado);
         this.testes.push(teste);
@@ -103,7 +54,7 @@ class TesteCLI {
             console.log('Nenhum teste cadastrado.');
             return;
         }
-        console.log('\n LISTA DE TESTES:');
+        console.log('\n== LISTA DE TESTES ==');
         this.testes.forEach((teste, index) => {
             console.log(`${index + 1}. ${teste.tipoT} - Resultado: ${teste.resultado}`);
         });
@@ -113,19 +64,52 @@ class TesteCLI {
             console.log('Nenhum teste disponível para executar.');
             return;
         }
-        const { indice } = await inquirer_1.default.prompt([
-            {
+        const { indice } = await inquirer_1.default.prompt([{
                 type: 'list',
                 name: 'indice',
                 message: 'Selecione o teste para executar:',
-                choices: this.testes.map((teste, index) => ({
-                    name: `${teste.tipoT} - ${teste.resultado}`,
-                    value: index
-                }))
-            }
-        ]);
+                choices: this.testes.map((teste, index) => ({ name: `${teste.tipoT} - ${teste.resultado}`, value: index }))
+            }]);
         const testeSelecionado = this.testes[indice];
         testeSelecionado.executarTeste();
+    }
+    static async show() {
+        let sair = false;
+        while (!sair) {
+            const { acao } = await inquirer_1.default.prompt([{
+                    type: 'list',
+                    name: 'acao',
+                    message: '== Menu Testes ==',
+                    choices: [
+                        'Cadastrar Novo Teste',
+                        'Listar Todos Testes',
+                        'Executar Teste',
+                        'Salvar Testes',
+                        'Carregar Testes',
+                        'Voltar'
+                    ]
+                }]);
+            switch (acao) {
+                case 'Cadastrar Novo Teste':
+                    await this.cadastrarTeste();
+                    break;
+                case 'Listar Todos Testes':
+                    await this.listarTestes();
+                    break;
+                case 'Executar Teste':
+                    await this.executarTeste();
+                    break;
+                case 'Salvar Testes':
+                    this.salvarTestes();
+                    break;
+                case 'Carregar Testes':
+                    this.carregarTestes();
+                    break;
+                case 'Voltar':
+                    sair = true;
+                    break;
+            }
+        }
     }
 }
 exports.TesteCLI = TesteCLI;

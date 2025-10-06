@@ -16,9 +16,8 @@ class FuncionarioCLI {
     static salvarFuncionarios() {
         try {
             const dataDir = path_1.default.dirname(this.DATA_FILE);
-            if (!fs_1.default.existsSync(dataDir)) {
+            if (!fs_1.default.existsSync(dataDir))
                 fs_1.default.mkdirSync(dataDir, { recursive: true });
-            }
             const dadosSerializaveis = this.funcionarios.map(funcionario => ({
                 id: funcionario.getId,
                 nome: funcionario.getNome,
@@ -32,7 +31,7 @@ class FuncionarioCLI {
             console.log(`✅ ${this.funcionarios.length} funcionário(s) salvo(s) com sucesso em ${this.DATA_FILE}!`);
         }
         catch (error) {
-            console.error('❌ Erro ao salvar funcionários:', error);
+            console.error('Erro ao salvar funcionários:', error);
         }
     }
     static carregarFuncionarios() {
@@ -42,53 +41,11 @@ class FuncionarioCLI {
                 return;
             }
             const dados = JSON.parse(fs_1.default.readFileSync(this.DATA_FILE, 'utf8'));
-            this.funcionarios = dados.map((dado) => {
-                return new Funcionario_1.default(dado.id, dado.nome, dado.telefone, dado.endereco, dado.usuario, dado.senha, dado.nivelPermissao);
-            });
+            this.funcionarios = dados.map((dado) => new Funcionario_1.default(dado.id, dado.nome, dado.telefone, dado.endereco, dado.usuario, dado.senha, dado.nivelPermissao));
             console.log(`✅ ${this.funcionarios.length} funcionário(s) carregado(s) com sucesso!`);
         }
         catch (error) {
-            console.error('❌ Erro ao carregar funcionários:', error);
-        }
-    }
-    static async show() {
-        const { acao } = await inquirer_1.default.prompt([
-            {
-                type: 'list',
-                name: 'acao',
-                message: 'Menu Funcionários',
-                choices: [
-                    'Cadastrar Novo Funcionário',
-                    'Listar Todos Funcionários',
-                    'Buscar Funcionário por ID',
-                    'Autenticar Funcionário',
-                    'Salvar Funcionários',
-                    'Carregar Funcionários',
-                    'Voltar'
-                ]
-            }
-        ]);
-        switch (acao) {
-            case 'Cadastrar Novo Funcionário':
-                await this.cadastrarFuncionario();
-                break;
-            case 'Listar Todos Funcionários':
-                await this.listarFuncionarios();
-                break;
-            case 'Buscar Funcionário por ID':
-                await this.buscarPorId();
-                break;
-            case 'Autenticar Funcionário':
-                await this.autenticarFuncionario();
-                break;
-            case 'Salvar Funcionários':
-                this.salvarFuncionarios();
-                break;
-            case 'Carregar Funcionários':
-                this.carregarFuncionarios();
-                break;
-            case 'Voltar':
-                break;
+            console.error('Erro ao carregar funcionários:', error);
         }
     }
     static async cadastrarFuncionario() {
@@ -99,12 +56,7 @@ class FuncionarioCLI {
             { type: 'input', name: 'endereco', message: 'Qual o endereço do funcionário? ' },
             { type: 'input', name: 'usuario', message: 'Qual o usuário do funcionário? ' },
             { type: 'password', name: 'senha', message: 'Qual a senha do funcionário? ' },
-            {
-                type: 'list',
-                name: 'nivelPermissao',
-                message: 'Qual o nível de permissão? ',
-                choices: Object.values(enum_1.NivelPermissao)
-            }
+            { type: 'list', name: 'nivelPermissao', message: 'Qual o nível de permissão? ', choices: Object.values(enum_1.NivelPermissao) }
         ]);
         const funcionario = new Funcionario_1.default(dados.id, dados.nome, dados.telefone, dados.endereco, dados.usuario, dados.senha, dados.nivelPermissao);
         this.funcionarios.push(funcionario);
@@ -116,16 +68,13 @@ class FuncionarioCLI {
             console.log('Nenhum funcionário cadastrado.');
             return;
         }
-        console.log('\n LISTA DE FUNCIONÁRIOS:');
+        console.log('\n== LISTA DE FUNCIONÁRIOS ==');
         this.funcionarios.forEach((funcionario, index) => {
             console.log(`${index + 1}. ${funcionario.getId} - ${funcionario.getNome} - ${funcionario.getNivelPermissao}`);
         });
     }
     static async buscarPorId() {
-        const resposta = await inquirer_1.default.prompt([
-            { type: 'input', name: 'id', message: 'Digite o ID do funcionário: ' }
-        ]);
-        const { id } = resposta;
+        const { id } = await inquirer_1.default.prompt([{ type: 'input', name: 'id', message: 'Digite o ID do funcionário: ' }]);
         const funcionario = this.buscarFuncionarioPorId(id);
         if (funcionario) {
             console.log('✅ Funcionário encontrado:');
@@ -152,6 +101,48 @@ class FuncionarioCLI {
         }
         else {
             console.log('❌ Usuário ou senha incorretos!');
+        }
+    }
+    static async show() {
+        let sair = false;
+        while (!sair) {
+            const { acao } = await inquirer_1.default.prompt([{
+                    type: 'list',
+                    name: 'acao',
+                    message: '== Menu Funcionários ==',
+                    choices: [
+                        'Cadastrar Novo Funcionário',
+                        'Listar Todos Funcionários',
+                        'Buscar Funcionário por ID',
+                        'Autenticar Funcionário',
+                        'Salvar Funcionários',
+                        'Carregar Funcionários',
+                        'Voltar'
+                    ]
+                }]);
+            switch (acao) {
+                case 'Cadastrar Novo Funcionário':
+                    await this.cadastrarFuncionario();
+                    break;
+                case 'Listar Todos Funcionários':
+                    await this.listarFuncionarios();
+                    break;
+                case 'Buscar Funcionário por ID':
+                    await this.buscarPorId();
+                    break;
+                case 'Autenticar Funcionário':
+                    await this.autenticarFuncionario();
+                    break;
+                case 'Salvar Funcionários':
+                    this.salvarFuncionarios();
+                    break;
+                case 'Carregar Funcionários':
+                    this.carregarFuncionarios();
+                    break;
+                case 'Voltar':
+                    sair = true;
+                    break;
+            }
         }
     }
 }

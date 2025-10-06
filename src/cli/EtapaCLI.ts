@@ -57,48 +57,48 @@ export class EtapaCLI {
         }
     }
 
-    static async show(): Promise<void> {
+    static async EtapaShow(): Promise<void> {
         const { acao } = await inquirer.prompt([
             {
                 type: 'list',
                 name: 'acao',
                 message: '== Gerenciar Etapas',
                 choices: [
-                    '1 - Cadastrar etapa',
-                    '2 - Listar etapas',
-                    '3 - Buscar etapa',
-                    '4 - Iniciar etapa',
-                    '5 - Finalizar etapa',
-                    '6 - Salvar',
-                    '7 - Carregar',
-                    '0 - Sair'
+                    'Cadastrar etapa',
+                    'Listar etapas',
+                    'Buscar etapa',
+                    'Iniciar etapa',
+                    'Finalizar etapa',
+                    'Salvar',
+                    'Carregar',
+                    'Sair'
                 ]
             }
         ]);
 
         switch (acao) {
-            case '1':
+            case 'Cadastrar etapa':
                 await this.cadastrarEtapa();
                 break;
-            case '2':
+            case 'Listar etapas':
                 await this.listarEtapas();
                 break;
-            case '3':
+            case 'Buscar etapa':
                 await this.buscarPorNome();
                 break;
-            case '4':
+            case 'Iniciar etapa':
                 await this.iniciarEtapa();
                 break;
-            case '5':
+            case 'Finalizar etapa':
                 await this.finalizarEtapa();
                 break;
-            case '6':
+            case 'Salvar':
                 this.salvar();
                 break;
-            case '7':
+            case 'Carregar':
                 this.carregar();
                 break;
-            case '0':
+            case 'Sair':
                 break;
         }
     }

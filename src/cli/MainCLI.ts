@@ -5,7 +5,6 @@ import { EtapaCLI } from './EtapaCLI';
 import { TesteCLI } from './TesteCLI';
 import { RelatorioCLI } from './RelatorioCLI';
 import { FuncionarioCLI } from './FuncionarioCLI';
-import Peca from '../Peca';
 
 export class MainCLI {
     static async show(): Promise<void> {
@@ -37,7 +36,7 @@ export class MainCLI {
                     await FuncionarioCLI.show();
                     break;
                 case 'Gerenciar Etapas de Produção':
-                    await EtapaCLI.show();
+                    await EtapaCLI.EtapaShow();
                     break;
                 case 'Gerenciar Testes':
                     await TesteCLI.show();
@@ -46,7 +45,7 @@ export class MainCLI {
                     await RelatorioCLI.show();
                     break;
                 case 'Sair':
-                    console.log('👋 Obrigado por usar o Aerocode!');
+                    console.log('Obrigado por usar o Aerocode!');
                     return;
             }
         }

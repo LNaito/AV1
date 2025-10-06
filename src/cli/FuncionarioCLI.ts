@@ -1,8 +1,8 @@
 import inquirer from "inquirer";
 import Funcionario from "../Funcionario";
 import { NivelPermissao } from "../enum";
-import fs from 'fs'
-import path from 'path'
+import fs from 'fs';
+import path from 'path';
 
 export class FuncionarioCLI {
     static funcionarios: Funcionario[] = [];
@@ -16,9 +16,7 @@ export class FuncionarioCLI {
     static salvarFuncionarios(): void {
         try {
             const dataDir = path.dirname(this.DATA_FILE);
-            if (!fs.existsSync(dataDir)) {
-                fs.mkdirSync(dataDir, { recursive: true });
-            }
+            if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
             const dadosSerializaveis = this.funcionarios.map(funcionario => ({
                 id: funcionario.getId,
@@ -33,7 +31,7 @@ export class FuncionarioCLI {
             fs.writeFileSync(this.DATA_FILE, JSON.stringify(dadosSerializaveis, null, 2));
             console.log(`✅ ${this.funcionarios.length} funcionário(s) salvo(s) com sucesso em ${this.DATA_FILE}!`);
         } catch (error) {
-            console.error('❌ Erro ao salvar funcionários:', error);
+            console.error('Erro ao salvar funcionários:', error);
         }
     }
 
@@ -45,64 +43,18 @@ export class FuncionarioCLI {
             }
 
             const dados = JSON.parse(fs.readFileSync(this.DATA_FILE, 'utf8'));
-            
-            this.funcionarios = dados.map((dado: any) => {
-                return new Funcionario(
-                    dado.id,
-                    dado.nome,
-                    dado.telefone,
-                    dado.endereco,
-                    dado.usuario,
-                    dado.senha,
-                    dado.nivelPermissao
-                );
-            });
-
+            this.funcionarios = dados.map((dado: any) => new Funcionario(
+                dado.id,
+                dado.nome,
+                dado.telefone,
+                dado.endereco,
+                dado.usuario,
+                dado.senha,
+                dado.nivelPermissao
+            ));
             console.log(`✅ ${this.funcionarios.length} funcionário(s) carregado(s) com sucesso!`);
         } catch (error) {
-            console.error('❌ Erro ao carregar funcionários:', error);
-        }
-    }
-
-    static async show(): Promise<void> {
-        const { acao } = await inquirer.prompt([
-            {
-                type: 'list',
-                name: 'acao',
-                message: 'Menu Funcionários',
-                choices: [
-                    'Cadastrar Novo Funcionário',
-                    'Listar Todos Funcionários',
-                    'Buscar Funcionário por ID',
-                    'Autenticar Funcionário',
-                    'Salvar Funcionários',
-                    'Carregar Funcionários',
-                    'Voltar'
-                ]
-            }
-        ]);
-
-        switch (acao) {
-            case 'Cadastrar Novo Funcionário':
-                await this.cadastrarFuncionario();
-                break;
-            case 'Listar Todos Funcionários':
-                await this.listarFuncionarios();
-                break;
-            case 'Buscar Funcionário por ID':
-                await this.buscarPorId();
-                break;
-            case 'Autenticar Funcionário':
-                await this.autenticarFuncionario();
-                break;
-            case 'Salvar Funcionários':
-                this.salvarFuncionarios();
-                break;
-            case 'Carregar Funcionários':
-                this.carregarFuncionarios();
-                break;
-            case 'Voltar':
-                break;
+            console.error('Erro ao carregar funcionários:', error);
         }
     }
 
@@ -114,22 +66,12 @@ export class FuncionarioCLI {
             { type: 'input', name: 'endereco', message: 'Qual o endereço do funcionário? ' },
             { type: 'input', name: 'usuario', message: 'Qual o usuário do funcionário? ' },
             { type: 'password', name: 'senha', message: 'Qual a senha do funcionário? ' },
-            {
-                type: 'list',
-                name: 'nivelPermissao',
-                message: 'Qual o nível de permissão? ',
-                choices: Object.values(NivelPermissao)
-            }
+            { type: 'list', name: 'nivelPermissao', message: 'Qual o nível de permissão? ', choices: Object.values(NivelPermissao) }
         ]);
 
         const funcionario = new Funcionario(
-            dados.id,
-            dados.nome,
-            dados.telefone,
-            dados.endereco,
-            dados.usuario,
-            dados.senha,
-            dados.nivelPermissao
+            dados.id, dados.nome, dados.telefone, dados.endereco,
+            dados.usuario, dados.senha, dados.nivelPermissao
         );
 
         this.funcionarios.push(funcionario);
@@ -143,20 +85,15 @@ export class FuncionarioCLI {
             return;
         }
 
-        console.log('\n LISTA DE FUNCIONÁRIOS:');
+        console.log('\n== LISTA DE FUNCIONÁRIOS ==');
         this.funcionarios.forEach((funcionario, index) => {
             console.log(`${index + 1}. ${funcionario.getId} - ${funcionario.getNome} - ${funcionario.getNivelPermissao}`);
         });
     }
 
     static async buscarPorId(): Promise<void> {
-        const resposta: { id: string } = await inquirer.prompt([
-            { type: 'input', name: 'id', message: 'Digite o ID do funcionário: ' }
-        ]);
-
-        const { id } = resposta;
+        const { id } = await inquirer.prompt([{ type: 'input', name: 'id', message: 'Digite o ID do funcionário: ' }]);
         const funcionario = this.buscarFuncionarioPorId(id);
-
         if (funcionario) {
             console.log('✅ Funcionário encontrado:');
             console.log(`ID: ${funcionario.getId}`);
@@ -176,7 +113,7 @@ export class FuncionarioCLI {
             { type: 'password', name: 'senha', message: 'Senha: ' }
         ]);
 
-        const funcionario = this.funcionarios.find(f => 
+        const funcionario = this.funcionarios.find(f =>
             f.getUsuario === dados.usuario && f.getSenha === dados.senha
         );
 
@@ -185,6 +122,36 @@ export class FuncionarioCLI {
             console.log(`Bem-vindo, ${funcionario.getNome}!`);
         } else {
             console.log('❌ Usuário ou senha incorretos!');
+        }
+    }
+
+    static async show(): Promise<void> {
+        let sair = false;
+        while (!sair) {
+            const { acao } = await inquirer.prompt([{
+                type: 'list',
+                name: 'acao',
+                message: '== Menu Funcionários ==',
+                choices: [
+                    'Cadastrar Novo Funcionário',
+                    'Listar Todos Funcionários',
+                    'Buscar Funcionário por ID',
+                    'Autenticar Funcionário',
+                    'Salvar Funcionários',
+                    'Carregar Funcionários',
+                    'Voltar'
+                ]
+            }]);
+
+            switch (acao) {
+                case 'Cadastrar Novo Funcionário': await this.cadastrarFuncionario(); break;
+                case 'Listar Todos Funcionários': await this.listarFuncionarios(); break;
+                case 'Buscar Funcionário por ID': await this.buscarPorId(); break;
+                case 'Autenticar Funcionário': await this.autenticarFuncionario(); break;
+                case 'Salvar Funcionários': this.salvarFuncionarios(); break;
+                case 'Carregar Funcionários': this.carregarFuncionarios(); break;
+                case 'Voltar': sair = true; break;
+            }
         }
     }
 }

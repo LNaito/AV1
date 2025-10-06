@@ -12,7 +12,7 @@ try {
     AeronaveCLI_1.AeronaveCLI.carregar();
     PecaCLI_1.PecaCLI.carregarPecas();
     FuncionarioCLI_1.FuncionarioCLI.carregarFuncionarios();
-    EtapaCLI_1.EtapaCLI.cadastrarEtapa();
+    EtapaCLI_1.EtapaCLI.carregar();
     TesteCLI_1.TesteCLI.carregarTestes();
     console.log('Dados carregados!\n');
 }

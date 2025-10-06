@@ -41,7 +41,7 @@ class MainCLI {
                     await FuncionarioCLI_1.FuncionarioCLI.show();
                     break;
                 case 'Gerenciar Etapas de Produção':
-                    await EtapaCLI_1.EtapaCLI.show();
+                    await EtapaCLI_1.EtapaCLI.EtapaShow();
                     break;
                 case 'Gerenciar Testes':
                     await TesteCLI_1.TesteCLI.show();
@@ -50,7 +50,7 @@ class MainCLI {
                     await RelatorioCLI_1.RelatorioCLI.show();
                     break;
                 case 'Sair':
-                    console.log('👋 Obrigado por usar o Aerocode!');
+                    console.log('Obrigado por usar o Aerocode!');
                     return;
             }
         }

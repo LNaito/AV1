@@ -4,22 +4,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AeronaveCLI = void 0;
+const inquirer_1 = __importDefault(require("inquirer"));
 const Aeronave_1 = __importDefault(require("../Aeronave"));
 const enum_1 = require("../enum");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const inquirer_1 = __importDefault(require("inquirer"));
 class AeronaveCLI {
-    //== Métodos 
     static buscar(codigo) {
         return this.aeronavesMap.get(codigo);
     }
     static salvarAeronaves() {
         try {
             const dataDir = path_1.default.dirname(this.DATA_FILE);
-            if (!fs_1.default.existsSync(dataDir)) {
+            if (!fs_1.default.existsSync(dataDir))
                 fs_1.default.mkdirSync(dataDir, { recursive: true });
-            }
             const dados = this.listaAeronaves.map(aeronave => ({
                 codigo: aeronave.codigo,
                 modelo: aeronave.modelo,
@@ -46,12 +44,6 @@ class AeronaveCLI {
             const dados = JSON.parse(fs_1.default.readFileSync(this.DATA_FILE, 'utf8'));
             this.listaAeronaves = dados.map((dado) => {
                 const aeronave = new Aeronave_1.default(dado.codigo, dado.modelo, dado.tipoA, dado.capacidade, dado.alcance, dado.etapas ?? [], dado.pecas ?? [], dado.testes ?? []);
-                if (dado.pecas)
-                    aeronave.pecas = dado.pecas;
-                if (dado.etapas)
-                    aeronave.etapas = dado.etapas;
-                if (dado.testes)
-                    aeronave.testes = dado.testes;
                 return aeronave;
             });
             console.log(`Carregamento concluído.`);
@@ -62,82 +54,78 @@ class AeronaveCLI {
     }
     static async cadastrarAeronave() {
         const dados = await inquirer_1.default.prompt([
-            { type: 'input', name: 'codigo', message: 'Digite o código da Aeronave. ' },
-            { type: 'input', name: 'modelo', message: 'Digite o modelo da aeronave. ' },
-            {
-                type: 'list',
-                name: 'tipo',
-                message: 'Digite o tipo da sua Aeronave. (COMERCIAL ou MILITAR) ',
-                choices: Object.values(enum_1.TipoAeronave)
-            },
-            { type: 'number', name: 'capacidade', message: 'Digite a capacidade de passageiros da sua Aeronave. ' },
-            { type: 'number', name: 'alcance', message: 'Em quilômetros, digite o alcance da Aeronave.' }
+            { type: 'input', name: 'codigo', message: 'Digite o código da Aeronave.' },
+            { type: 'input', name: 'modelo', message: 'Digite o modelo da aeronave.' },
+            { type: 'list', name: 'tipo', message: 'Tipo da Aeronave:', choices: Object.values(enum_1.TipoAeronave) },
+            { type: 'number', name: 'capacidade', message: 'Capacidade de passageiros.' },
+            { type: 'number', name: 'alcance', message: 'Alcance em km.' }
         ]);
-        const aeronave = new Aeronave_1.default(dados.codigo, dados.modelo, dados.tipo, dados.capacidade, dados.alcance, [], // Etapas
-        [], // Pecas
-        [] // Testes
-        );
+        const aeronave = new Aeronave_1.default(dados.codigo, dados.modelo, dados.tipo, dados.capacidade, dados.alcance, [], [], []);
         this.listaAeronaves.push(aeronave);
-        console.log('Aeronave cadadastrada com sucesso!');
+        this.aeronavesMap.set(dados.codigo, aeronave);
+        console.log('Aeronave cadastrada com sucesso!');
     }
     static async listar() {
         if (this.listaAeronaves.length === 0) {
             console.log('Nenhuma aeronave cadastrada.');
             return;
         }
-        console.log('\n LISTA DE AERONAVES:');
+        console.log('\n== LISTA DE AERONAVES ==');
         this.listaAeronaves.forEach((aeronave, index) => {
             console.log(`${index + 1}. ${aeronave.codigo} - ${aeronave.modelo} (${aeronave.tipoA})`);
         });
     }
     static async buscarPorCodigo() {
-        const resposta = await inquirer_1.default.prompt([
-            { type: 'input', name: 'codigo', message: 'Para encontrar uma aeronave expecifica, digite o código da aeronave: ' }
+        const { codigo } = await inquirer_1.default.prompt([
+            { type: 'input', name: 'codigo', message: 'Digite o código da aeronave:' }
         ]);
-        const { codigo } = resposta;
         const aeronave = this.buscar(codigo);
         if (aeronave) {
             console.log('Aeronave encontrada:');
             aeronave.detalhes();
         }
         else {
-            console.log('Aeronave não foi encontrada.');
+            console.log('Aeronave não encontrada.');
         }
     }
     static async show() {
-        const { acao } = await inquirer_1.default.prompt([
-            {
-                type: 'list',
-                name: 'acao',
-                message: '== Gerenciar Aeronaves',
-                choices: [
-                    '1 - Cadastrar Nova Aeronave',
-                    '2 - Listar Todas Aeronaves',
-                    '3 - Buscar Aeronave por código',
-                    '4 - Salvar Aeronave',
-                    '5 - Carregar Aeronave',
-                    '0 - Sair'
-                ]
+        let sair = false;
+        while (!sair) {
+            const { acao } = await inquirer_1.default.prompt([
+                {
+                    type: 'list',
+                    name: 'acao',
+                    message: '== Gerenciar Aeronaves ==',
+                    choices: [
+                        'Cadastrar Nova Aeronave',
+                        'Listar Todas Aeronaves',
+                        'Buscar Aeronave por código',
+                        'Salvar Aeronave',
+                        'Carregar Aeronave',
+                        'Voltar'
+                    ]
+                }
+            ]);
+            switch (acao) {
+                case 'Cadastrar Nova Aeronave':
+                    await this.cadastrarAeronave();
+                    break;
+                case 'Listar Todas Aeronaves':
+                    await this.listar();
+                    break;
+                case 'Buscar Aeronave por código':
+                    await this.buscarPorCodigo();
+                    break;
+                case 'Salvar Aeronave':
+                    this.salvarAeronaves();
+                    break;
+                case 'Carregar Aeronave':
+                    this.carregar();
+                    break;
+                case 'Voltar':
+                    sair = true;
+                    break;
             }
-        ]);
-        switch (acao) {
-            case '1':
-                await this.cadastrarAeronave();
-                break;
-            case '2':
-                await this.listar();
-                break;
-            case '3':
-                await this.buscarPorCodigo();
-                break;
-            case '4':
-                this.salvarAeronaves();
-                break;
-            case '5':
-                this.carregar();
-                break;
-            case '0':
-                break;
         }
     }
 }
