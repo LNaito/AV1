@@ -29,7 +29,7 @@ export class FuncionarioCLI {
             }));
 
             fs.writeFileSync(this.DATA_FILE, JSON.stringify(dadosSerializaveis, null, 2));
-            console.log(`✅ ${this.funcionarios.length} funcionário(s) salvo(s) com sucesso em ${this.DATA_FILE}!`);
+            console.log(`${this.funcionarios.length} funcionário(s) salvo(s) com sucesso em ${this.DATA_FILE}!`);
         } catch (error) {
             console.error('Erro ao salvar funcionários:', error);
         }
@@ -38,7 +38,7 @@ export class FuncionarioCLI {
     static carregarFuncionarios(): void {
         try {
             if (!fs.existsSync(this.DATA_FILE)) {
-                console.log('📭 Nenhum arquivo de funcionários encontrado. Iniciando com lista vazia.');
+                console.log('Nenhum arquivo de funcionários encontrado.');
                 return;
             }
 
@@ -52,9 +52,9 @@ export class FuncionarioCLI {
                 dado.senha,
                 dado.nivelPermissao
             ));
-            console.log(`✅ ${this.funcionarios.length} funcionário(s) carregado(s) com sucesso!`);
+            console.log(`Funcionário carregado sucesso!`);
         } catch (error) {
-            console.error('Erro ao carregar funcionários:', error);
+            console.error('Erro:', error);
         }
     }
 
@@ -85,7 +85,7 @@ export class FuncionarioCLI {
             return;
         }
 
-        console.log('\n== LISTA DE FUNCIONÁRIOS ==');
+        console.log('\n== Lista de Funcionários:');
         this.funcionarios.forEach((funcionario, index) => {
             console.log(`${index + 1}. ${funcionario.getId} - ${funcionario.getNome} - ${funcionario.getNivelPermissao}`);
         });
@@ -95,7 +95,7 @@ export class FuncionarioCLI {
         const { id } = await inquirer.prompt([{ type: 'input', name: 'id', message: 'Digite o ID do funcionário: ' }]);
         const funcionario = this.buscarFuncionarioPorId(id);
         if (funcionario) {
-            console.log('✅ Funcionário encontrado:');
+            console.log(`Informações sobre ${funcionario.getNome}:`);
             console.log(`ID: ${funcionario.getId}`);
             console.log(`Nome: ${funcionario.getNome}`);
             console.log(`Telefone: ${funcionario.getTelefone}`);
@@ -118,10 +118,10 @@ export class FuncionarioCLI {
         );
 
         if (funcionario) {
-            console.log('✅ Autenticação bem-sucedida!');
+            console.log('Autenticação bem-sucedida!');
             console.log(`Bem-vindo, ${funcionario.getNome}!`);
         } else {
-            console.log('❌ Usuário ou senha incorretos!');
+            console.log('Usuário ou senha incorretos!');
         }
     }
 

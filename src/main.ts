@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { MainCLI } from "./cli/MainCLI";
 import { AeronaveCLI } from "./cli/AeronaveCLI";
 import { PecaCLI } from "./cli/PecaCLI";

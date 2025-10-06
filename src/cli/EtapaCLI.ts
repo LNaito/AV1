@@ -143,7 +143,7 @@ export class EtapaCLI {
         const etapa = this.buscarNome(nome);
 
         if (etapa) {
-            console.log('✅ Etapa encontrada:');
+            console.log('== Etapa encontrada:');
             console.log(`Nome: ${etapa.nome}`);
             console.log(`Prazo: ${etapa.prazo}`);
             console.log(`Status: ${etapa.statusE}`);

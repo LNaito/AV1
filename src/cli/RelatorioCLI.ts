@@ -59,7 +59,7 @@ export class RelatorioCLI {
             const nomeArquivo = `relatorio_sistema_${timestamp}.txt`;
 
             let relatorioTexto = '== Relatório completo ==\n';
-            relatorioTexto += `Data de geração: ${new Date().toLocaleString()}\n\n`;
+            relatorioTexto += `Data: ${new Date().toLocaleString()}\n\n`;
             relatorioTexto += `Total de Aeronaves: ${AeronaveCLI['listaAeronaves'].length}\n`;
             relatorioTexto += `Total de Peças: ${PecaCLI['pecas']?.length || 0}\n`;
             relatorioTexto += `Total de Etapas: ${EtapaCLI['etapas']?.length || 0}\n`;
@@ -75,17 +75,17 @@ export class RelatorioCLI {
     static async listarRelatoriosSalvos(): Promise<void> {
         const relatoriosDir = 'data';
         if (!fs.existsSync(relatoriosDir)) {
-            console.log('📭 Nenhum relatório salvo encontrado.');
+            console.log('Nenhum relatório salvo encontrado.');
             return;
         }
 
         const arquivos = fs.readdirSync(relatoriosDir).filter(f => f.startsWith('relatorio_') && f.endsWith('.txt'));
         if (arquivos.length === 0) {
-            console.log('📭 Nenhum relatório salvo encontrado.');
+            console.log('Não foi possível encontrar relatórios.');
             return;
         }
 
-        console.log('\n📁 RELATÓRIOS SALVOS:');
+        console.log('\n == Seus relatórios:');
         arquivos.forEach((arquivo, index) => console.log(`${index + 1}. ${arquivo}`));
 
         const { visualizar } = await inquirer.prompt([{ type: 'confirm', name: 'visualizar', message: 'Deseja visualizar algum relatório?', default: false }]);
@@ -98,7 +98,7 @@ export class RelatorioCLI {
             }]);
 
             const conteudo = fs.readFileSync(path.join(relatoriosDir, arquivoSelecionado), 'utf8');
-            console.log(`\n📄 CONTEÚDO DO RELATÓRIO ${arquivoSelecionado}:\n`);
+            console.log(`\n Sobre o ${arquivoSelecionado}:\n`);
             console.log(conteudo);
         }
     }

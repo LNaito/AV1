@@ -19,16 +19,16 @@ export class TesteCLI {
             }));
 
             fs.writeFileSync(this.DATA_FILE, JSON.stringify(dadosSerializaveis, null, 2));
-            console.log(`✅ ${this.testes.length} teste(s) salvo(s) com sucesso em ${this.DATA_FILE}!`);
+            console.log(`${this.testes.length} teste(s) salvo(s) com sucesso em ${this.DATA_FILE}!`);
         } catch (error) {
-            console.error('❌ Erro ao salvar testes:', error);
+            console.error('Erro:', error);
         }
     }
 
     static carregarTestes(): void {
         try {
             if (!fs.existsSync(this.DATA_FILE)) {
-                console.log('📭 Nenhum arquivo de testes encontrado. Iniciando com lista vazia.');
+                console.log('Nenhum arquivo de testes encontrado.');
                 return;
             }
 
@@ -37,7 +37,7 @@ export class TesteCLI {
 
             console.log(`✅ ${this.testes.length} teste(s) carregado(s) com sucesso!`);
         } catch (error) {
-            console.error('❌ Erro ao carregar testes:', error);
+            console.error('Erro ao carregar testes:', error);
         }
     }
 
