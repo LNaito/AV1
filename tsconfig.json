@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "outDir": "out/",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext", 
+    "target": "ES2020",    
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "skipLibCheck": true,
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
